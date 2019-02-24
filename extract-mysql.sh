@@ -3,7 +3,6 @@
 export LC_ALL=C
 
 backup_owner="backup"
-encryption_key_file="/backups/mysql/encryption_key"
 log_file="extract-progress.log"
 number_of_args="${#}"
 processors="$(nproc --all)"
@@ -32,10 +31,6 @@ sanity_check () {
         error "Script requires at least one \".xbstream\" file as an argument."
     fi
     
-    # Check whether the encryption key file is available
-    if [ ! -r "${encryption_key_file}" ]; then
-        error "Cannot read encryption key at ${encryption_key_file}"
-    fi
 }
 
 do_extraction () {
@@ -51,8 +46,6 @@ do_extraction () {
 
         xtrabackup_args=(
             "--parallel=${processors}"
-            "--decrypt=AES256"
-            "--encrypt-key-file=${encryption_key_file}"
             "--decompress"
         )
 

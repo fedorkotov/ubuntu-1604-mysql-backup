@@ -8,8 +8,7 @@ parent_dir="/backups/mysql"
 defaults_file="/etc/mysql/backup.cnf"
 todays_dir="${parent_dir}/$(date +%a)"
 log_file="${todays_dir}/backup-progress.log"
-encryption_key_file="${parent_dir}/encryption_key"
-now="$(date +%m-%d-%Y_%H-%M-%S)"
+now="$(date +%Y-%m-%d_%H-%M-%S)"
 processors="$(nproc --all)"
 
 # Use this to echo to standard error
@@ -25,11 +24,6 @@ sanity_check () {
     if [ "$(id --user --name)" != "$backup_owner" ]; then
         error "Script can only be run as the \"$backup_owner\" user"
     fi
-    
-    # Check whether the encryption key file is available
-    if [ ! -r "${encryption_key_file}" ]; then
-        error "Cannot read encryption key at ${encryption_key_file}"
-    fi
 }
 
 set_options () {
@@ -40,11 +34,8 @@ set_options () {
         "--extra-lsndir=${todays_dir}"
         "--compress"
         "--stream=xbstream"
-        "--encrypt=AES256"
-        "--encrypt-key-file=${encryption_key_file}"
         "--parallel=${processors}"
         "--compress-threads=${processors}"
-        "--encrypt-threads=${processors}"
         "--slave-info"
     )
     
